@@ -17,7 +17,7 @@
       "type": "v2rayGeoIPDat",
       "action": "output",
       "args": {
-        "outputDir": "./output",
+        "outputDir": "../output",
         "outputName": "geoip.dat",
         "wantedList": ["ru", "private"]
       }
