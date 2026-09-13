@@ -1,0 +1,7 @@
+[
+  {
+    "name": "geosite.dat",
+    "mode": "allowlist",
+    "lists": ["category-ru", "category-ads-all"]
+  }
+]

@@ -1,0 +1,74 @@
+name: Build geoip.dat / geosite.dat
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+
+      - name: Clone v2fly/domain-list-community
+        run: git clone --depth 1 https://github.com/v2fly/domain-list-community.git dlc
+
+      - name: Build geosite.dat (category-ru + category-ads-all only)
+        run: |
+          cp geosite-profile.json dlc/profile.json
+          mkdir -p output
+          cd dlc
+          go run ./ -datprofile=./profile.json -outputdir=../output
+
+      - name: Clone v2fly/geoip
+        run: git clone --depth 1 https://github.com/v2fly/geoip.git geoip
+
+      - name: Get DB-IP Lite Country MMDB database
+        run: |
+          YEAR=$(date +%Y)
+          MONTH=$(date +%m)
+          curl -L -o dbip.mmdb.gz "https://download.db-ip.com/free/dbip-country-lite-${YEAR}-${MONTH}.mmdb.gz"
+          gzip -d dbip.mmdb.gz
+          mkdir -p geoip/db-ip
+          mv dbip.mmdb geoip/db-ip/dbip-country-lite.mmdb
+
+      - name: Build geoip.dat (ru + private only)
+        run: |
+          cp geoip-config.json geoip/config-pochva.json
+          cd geoip
+          mkdir -p ../output
+          go run ./ -c ./config-pochva.json
+
+      - name: Generate sha256 checksums
+        run: |
+          cd output
+          sha256sum geosite.dat > geosite.dat.sha256sum
+          sha256sum geoip.dat > geoip.dat.sha256sum
+          ls -la
+
+      - name: Publish to "release" branch
+        run: |
+          cd output
+          git init
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b release
+          git add -A
+          git commit -m "Build $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git push -f origin release
