@@ -10,6 +10,22 @@
     {
       "type": "private",
       "action": "add"
+    },
+    {
+      "type": "text",
+      "action": "add",
+      "args": {
+        "name": "steam-ip",
+        "uri": "./steam-ip.txt"
+      }
+    },
+    {
+      "type": "text",
+      "action": "add",
+      "args": {
+        "name": "riot-ip",
+        "uri": "./riot-ip.txt"
+      }
     }
   ],
   "output": [
@@ -19,7 +35,7 @@
       "args": {
         "outputDir": "../output",
         "outputName": "geoip.dat",
-        "wantedList": ["ru", "private"]
+        "wantedList": ["ru", "private", "steam-ip", "riot-ip"]
       }
     }
   ]

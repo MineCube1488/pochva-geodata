@@ -47,7 +47,17 @@ jobs:
           mkdir -p geoip/db-ip
           mv dbip.mmdb geoip/db-ip/dbip-country-lite.mmdb
 
-      - name: Build geoip.dat (ru + private only)
+      - name: Fetch Steam (AS32590) and Riot Games (AS6507) announced prefixes
+        run: |
+          curl -s "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS32590" \
+            | python3 -c "import json,sys; print('\n'.join(p['prefix'] for p in json.load(sys.stdin)['data']['prefixes']))" \
+            > geoip/steam-ip.txt
+          curl -s "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS6507" \
+            | python3 -c "import json,sys; print('\n'.join(p['prefix'] for p in json.load(sys.stdin)['data']['prefixes']))" \
+            > geoip/riot-ip.txt
+          wc -l geoip/steam-ip.txt geoip/riot-ip.txt
+
+      - name: Build geoip.dat (ru + private + steam-ip + riot-ip)
         run: |
           cp geoip-config.json geoip/config-pochva.json
           cd geoip
