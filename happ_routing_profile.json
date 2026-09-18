@@ -1,0 +1,33 @@
+{
+  "Name": "Pochva_Routing",
+  "GlobalProxy": "true",
+  "UseChunkFiles": "true",
+  "RemoteDns": "1.1.1.1",
+  "DomesticDns": "77.88.8.8",
+  "RemoteDNSType": "DoH",
+  "RemoteDNSDomain": "https://1.1.1.1/dns-query",
+  "RemoteDNSIP": "1.1.1.1",
+  "DomesticDNSType": "DoH",
+  "DomesticDNSDomain": "https://77.88.8.8/dns-query",
+  "DomesticDNSIP": "77.88.8.8",
+  "Geoipurl": "https://raw.githubusercontent.com/MineCube1488/pochva-geodata/release/geoip.dat",
+  "Geositeurl": "https://raw.githubusercontent.com/MineCube1488/pochva-geodata/release/geosite.dat",
+  "RouteOrder": "block-proxy-direct",
+  "DirectSites": [
+    "geosite:category-ru",
+    "geosite:steam",
+    "geosite:riot"
+  ],
+  "DirectIp": [
+    "geoip:private",
+    "geoip:ru"
+  ],
+  "ProxySites": [],
+  "ProxyIp": [],
+  "BlockSites": [
+    "geosite:category-ads-all"
+  ],
+  "BlockIp": [],
+  "DomainStrategy": "IPIfNonMatch",
+  "FakeDNS": "false"
+}

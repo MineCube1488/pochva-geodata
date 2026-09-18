@@ -12,6 +12,17 @@
 - `https://raw.githubusercontent.com/MineCube1488/pochva-geodata/release/geoip.dat`
 - `https://raw.githubusercontent.com/MineCube1488/pochva-geodata/release/geosite.dat`
 
+## happ_routing_profile.json
+
+Плейн-JSON профиль маршрутизации Happ (не deeplink). Задан напрямую в поле **Settings → Subscription Settings → Happ routing rules** панели 3x-ui как HTTPS-ссылка:
+
+```
+https://raw.githubusercontent.com/MineCube1488/pochva-geodata/main/happ_routing_profile.json
+```
+
+3x-ui сам умеет читать по ссылке plain-JSON профиль роутинга (не только deeplink) и переупаковывает его в `happ://routing/onadd/...` внутри подписки — обновляет кэш каждые 5 минут фоновой задачей (`RemoteRoutingJob`, `@every 5m`) плюс живая ревалидация по ETag с TTL 10 минут. Значит после `git push` с изменениями в этом файле новые правила доедут до всех клиентов **автоматически**, в течение ~5–10 минут — без захода в панель.
+
+
 ## Локальная пересборка
 
 ```bash
