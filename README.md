@@ -2,7 +2,7 @@
 
 Минимальные `geoip.dat` и `geosite.dat` для Xray/Happ — собраны из официальных источников v2fly, но содержат только нужные категории (в отличие от полных мировых баз, которые упираются в лимит памяти туннеля на мобильных клиентах, например 50 МБ на iOS).
 
-- `geosite.dat`: `category-ru`, `category-ads-all` — собрано из [v2fly/domain-list-community](https://github.com/v2fly/domain-list-community) через встроенный `-datprofile` allowlist.
+- `geosite.dat`: `category-ru`, `category-ads-all`, `steam`, `riot` — собрано из [v2fly/domain-list-community](https://github.com/v2fly/domain-list-community) через встроенный `-datprofile` allowlist.
 - `geoip.dat`: `ru`, `private` — собрано из [v2fly/geoip](https://github.com/v2fly/geoip) (источник IP-данных — бесплатная DB-IP Country Lite).
 
 Пересобирается автоматически каждый день ([.github/workflows/build.yml](.github/workflows/build.yml)) и публикуется в ветку `release`.

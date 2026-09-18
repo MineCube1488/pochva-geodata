@@ -2,6 +2,6 @@
   {
     "name": "geosite.dat",
     "mode": "allowlist",
-    "lists": ["category-ru", "category-ads-all"]
+    "lists": ["category-ru", "category-ads-all", "steam", "riot"]
   }
 ]
