@@ -20,7 +20,9 @@
   ],
   "DirectIp": [
     "geoip:private",
-    "geoip:ru"
+    "geoip:ru",
+    "geoip:steam-ip",
+    "geoip:riot-ip"
   ],
   "ProxySites": [],
   "ProxyIp": [],
