@@ -1,0 +1,60 @@
+name: Publish Happ routing profile
+
+# happ_routing_profile.json is edited on main, but 3x-ui reads it from the
+# "release" branch. It only gets there if every geo category it references
+# already exists in the published geoip.dat / geosite.dat — otherwise clients
+# would fail to start Xray. LastUpdated is stamped here, not by hand.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - happ_routing_profile.json
+      - scripts/profile_tool.py
+      - .github/workflows/publish-profile.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Shared with build.yml: both push to the release branch
+concurrency:
+  group: release-branch
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Check and publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Checkout published release branch
+        run: |
+          git fetch --depth 1 origin release
+          git worktree add --detach _release origin/release
+
+      - name: Check profile against published geo files
+        run: |
+          python3 scripts/profile_tool.py check happ_routing_profile.json \
+            --geosite _release/geosite.dat --geoip _release/geoip.dat
+
+      - name: Stamp LastUpdated
+        run: |
+          python3 scripts/profile_tool.py stamp happ_routing_profile.json \
+            --previous _release/happ_routing_profile.json \
+            --out _release/happ_routing_profile.json
+
+      - name: Push to release branch
+        working-directory: _release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add happ_routing_profile.json
+          if git diff --cached --quiet; then
+            echo "Опубликованный профиль уже актуален"
+            exit 0
+          fi
+          git commit -m "Publish routing profile from ${GITHUB_SHA::7}"
+          git push origin HEAD:release

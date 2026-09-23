@@ -8,8 +8,9 @@ on:
 permissions:
   contents: write
 
+# Shared with publish-profile.yml: both push to the release branch
 concurrency:
-  group: ${{ github.workflow }}
+  group: release-branch
   cancel-in-progress: false
 
 jobs:
@@ -63,6 +64,24 @@ jobs:
           cd geoip
           mkdir -p ../output
           go run ./ -c ./config-pochva.json
+
+      # release is re-created from scratch below, so carry the published
+      # routing profile over, and refuse to publish geo files that would
+      # break it (e.g. a category removed upstream in v2fly)
+      - name: Carry over published routing profile
+        run: |
+          git fetch --depth 1 origin release
+          if git show origin/release:happ_routing_profile.json > output/happ_routing_profile.json 2>/dev/null; then
+            echo "Профиль взят из текущего release"
+          else
+            echo "В release профиля ещё нет — берём из main"
+            python3 scripts/profile_tool.py stamp happ_routing_profile.json --out output/happ_routing_profile.json
+          fi
+
+      - name: Check routing profile against freshly built geo files
+        run: |
+          python3 scripts/profile_tool.py check output/happ_routing_profile.json \
+            --geosite output/geosite.dat --geoip output/geoip.dat
 
       - name: Generate sha256 checksums
         run: |
